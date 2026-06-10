@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Clock, Sparkles, ShieldCheck, Landmark, Users, GraduationCap } from "lucide-react";
+import { Clock, Sparkles, ShieldCheck } from "lucide-react";
 import { ChatWidget } from "@/components/ChatWidget";
 import mascot from "@/assets/mascot.png";
 import cefetLogo from "@/assets/cefet-logo.png";
@@ -102,14 +102,6 @@ function Home() {
           </div>
         </div>
 
-        {/* Stats strip */}
-        <div className="relative bg-brand-navy-deep/60 backdrop-blur border-t border-white/10">
-          <div className="max-w-7xl mx-auto px-6 py-4 flex flex-wrap gap-8 text-white">
-            <Stat icon={Landmark} value="+110" label="Anos de história" />
-            <Stat icon={Users} value="+50.000" label="Estudantes formados" />
-            <Stat icon={GraduationCap} value="Educação pública" label="de qualidade" />
-          </div>
-        </div>
       </section>
     </div>
   );
@@ -137,22 +129,3 @@ function Feature({
   );
 }
 
-function Stat({
-  icon: Icon,
-  value,
-  label,
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  value: string;
-  label: string;
-}) {
-  return (
-    <div className="flex items-center gap-3">
-      <Icon className="w-6 h-6 text-brand-blue-light" />
-      <div className="leading-tight">
-        <div className="font-bold">{value}</div>
-        <div className="text-xs text-white/75">{label}</div>
-      </div>
-    </div>
-  );
-}
