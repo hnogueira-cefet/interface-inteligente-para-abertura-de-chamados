@@ -102,14 +102,6 @@ function Home() {
           </div>
         </div>
 
-        {/* Stats strip */}
-        <div className="relative bg-brand-navy-deep/60 backdrop-blur border-t border-white/10">
-          <div className="max-w-7xl mx-auto px-6 py-4 flex flex-wrap gap-8 text-white">
-            <Stat icon={Landmark} value="+110" label="Anos de história" />
-            <Stat icon={Users} value="+50.000" label="Estudantes formados" />
-            <Stat icon={GraduationCap} value="Educação pública" label="de qualidade" />
-          </div>
-        </div>
       </section>
     </div>
   );
