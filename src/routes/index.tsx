@@ -81,7 +81,7 @@ function Home() {
 
             </div>
 
-            <div className="relative hidden md:block self-start -mt-4">
+            <div className="relative hidden md:block">
               <img
                 src={mascot}
                 alt="Mascote do Suporte Inteligente CEFET/RJ"
