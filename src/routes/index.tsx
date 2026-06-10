@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Clock, Sparkles, ShieldCheck, MessageSquare, User, Landmark, Users, GraduationCap } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
+import { Clock, Sparkles, ShieldCheck, Landmark, Users, GraduationCap } from "lucide-react";
 import { ChatWidget } from "@/components/ChatWidget";
 import mascot from "@/assets/mascot.png";
 
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-const NAV = ["Início", "Sobre", "Cursos", "Serviços", "Notícias", "Contato"];
+
 
 function Logo() {
   return (
@@ -50,27 +50,8 @@ function Home() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="bg-white border-b border-border">
-        <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 py-3 flex items-center">
           <Logo />
-          <nav className="hidden md:flex items-center gap-8">
-            {NAV.map((item, i) => (
-              <Link
-                key={item}
-                to="/"
-                className={`text-sm font-medium ${
-                  i === 0
-                    ? "text-brand-blue border-b-2 border-brand-blue pb-1"
-                    : "text-foreground/80 hover:text-brand-blue"
-                }`}
-              >
-                {item}
-              </Link>
-            ))}
-          </nav>
-          <button className="flex items-center gap-2 bg-brand-navy-deep text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-navy transition-colors">
-            <User className="w-4 h-4" />
-            Entrar
-          </button>
         </div>
       </header>
 
