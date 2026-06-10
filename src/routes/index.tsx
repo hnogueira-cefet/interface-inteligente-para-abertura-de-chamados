@@ -129,22 +129,3 @@ function Feature({
   );
 }
 
-function Stat({
-  icon: Icon,
-  value,
-  label,
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  value: string;
-  label: string;
-}) {
-  return (
-    <div className="flex items-center gap-3">
-      <Icon className="w-6 h-6 text-brand-blue-light" />
-      <div className="leading-tight">
-        <div className="font-bold">{value}</div>
-        <div className="text-xs text-white/75">{label}</div>
-      </div>
-    </div>
-  );
-}
