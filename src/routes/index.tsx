@@ -23,7 +23,7 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-const NAV = ["Início", "Sobre", "Cursos", "Serviços", "Notícias", "Contato"];
+
 
 function Logo() {
   return (
