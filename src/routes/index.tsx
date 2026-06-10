@@ -107,10 +107,6 @@ function Home() {
                 <Feature icon={ShieldCheck} title="Informações" subtitle="Confiáveis" />
               </div>
 
-              <button className="mt-8 inline-flex items-center gap-2 bg-brand-blue hover:bg-brand-blue/90 text-white px-6 py-3.5 rounded-xl font-semibold shadow-lg shadow-brand-blue/30 transition-all hover:scale-[1.02]">
-                <MessageSquare className="w-5 h-5" />
-                Falar com o Suporte Inteligente
-              </button>
             </div>
 
             <div className="relative hidden md:block">
