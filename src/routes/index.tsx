@@ -28,21 +28,11 @@ export const Route = createFileRoute("/")({
 
 function Logo() {
   return (
-    <div className="flex items-center gap-3">
-      <div className="w-11 h-11 rounded-md bg-gradient-to-br from-brand-blue to-brand-navy flex items-center justify-center text-white font-bold text-lg shadow-sm">
-        TE
-      </div>
-      <div className="leading-tight">
-        <div className="font-bold text-brand-navy-deep text-base">CEFET/RJ</div>
-        <div className="text-[10px] text-muted-foreground max-w-[180px]">
-          Centro Federal de Educação Tecnológica
-          <br />
-          Celso Suckow da Fonseca
-          <br />
-          Campus Nova Iguaçu
-        </div>
-      </div>
-    </div>
+    <img
+      src={cefetLogo}
+      alt="CEFET/RJ - Centro Federal de Educação Tecnológica Celso Suckow da Fonseca - Campus Nova Iguaçu"
+      className="h-14 w-auto"
+    />
   );
 }
 
