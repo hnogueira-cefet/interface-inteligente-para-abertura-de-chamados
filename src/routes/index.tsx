@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Clock, Sparkles, ShieldCheck, Landmark, Users, GraduationCap } from "lucide-react";
 import { ChatWidget } from "@/components/ChatWidget";
 import mascot from "@/assets/mascot.png";
+import cefetLogo from "@/assets/cefet-logo.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
