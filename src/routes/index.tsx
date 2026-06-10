@@ -58,30 +58,38 @@ function Home() {
               "radial-gradient(circle at 20% 20%, white 0%, transparent 40%), radial-gradient(circle at 80% 70%, white 0%, transparent 40%)",
           }}
         />
-        <div className="relative max-w-7xl mx-auto px-6 py-12 grid gap-8 items-stretch lg:grid-cols-[35fr_32.5fr_32.5fr]">
-          {/* Col 1: Texto institucional */}
-          <div className="text-white z-10 flex flex-col justify-center">
+        <div className="relative max-w-7xl mx-auto px-6 py-12 grid gap-6 items-stretch lg:grid-cols-[35fr_32.5fr_32.5fr]">
+          {/* Col 1: Card Institucional */}
+          <div
+            className="relative rounded-3xl border border-white/15 p-8 md:p-10 flex flex-col justify-center text-white h-[700px] max-lg:h-auto max-lg:min-h-[420px] max-sm:min-h-0 max-sm:p-6"
+            style={{
+              background: "linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03))",
+              backdropFilter: "blur(14px)",
+              WebkitBackdropFilter: "blur(14px)",
+              boxShadow: "var(--shadow-chat)",
+            }}
+          >
             <h1 className="font-extrabold leading-[0.95] tracking-tight">
-              <span className="block text-5xl md:text-6xl">Suporte</span>
-              <span className="block text-5xl md:text-6xl text-brand-blue-light">
+              <span className="block text-4xl md:text-5xl lg:text-6xl">Suporte</span>
+              <span className="block text-4xl md:text-5xl lg:text-6xl text-brand-blue-light">
                 Inteligente
               </span>
             </h1>
-            <p className="mt-6 text-white/85 text-base max-w-md leading-relaxed">
+            <p className="mt-6 text-white/85 text-base leading-relaxed">
               O Suporte Inteligente do CEFET/RJ Campus Nova Iguaçu está aqui para
               ajudar você com informações, serviços e orientações.
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-6">
+            <div className="mt-8 flex flex-wrap gap-5">
               <Feature icon={Clock} title="Atendimento" subtitle="24 horas" />
               <Feature icon={Sparkles} title="Respostas" subtitle="Inteligentes" />
               <Feature icon={ShieldCheck} title="Informações" subtitle="Confiáveis" />
             </div>
           </div>
 
-          {/* Col 2: Avatar - card glassmorphism */}
+          {/* Col 2: Card Avatar */}
           <div
-            className="relative rounded-2xl overflow-hidden flex items-center justify-center p-6 h-[700px] max-lg:h-[420px] max-sm:h-[300px] border border-white/15 mx-auto w-full"
+            className="relative rounded-3xl overflow-hidden flex items-center justify-center p-6 h-[700px] max-lg:h-[420px] max-sm:h-[300px] border border-white/15 w-full"
             style={{
               background: "linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03))",
               backdropFilter: "blur(14px)",
@@ -96,8 +104,8 @@ function Home() {
             />
           </div>
 
-          {/* Col 3: Chatbot */}
-          <div className="h-[700px] flex w-full mx-auto">
+          {/* Col 3: Card Chatbot */}
+          <div className="h-[700px] max-sm:h-[600px] flex w-full">
             <ChatWidget />
           </div>
         </div>
