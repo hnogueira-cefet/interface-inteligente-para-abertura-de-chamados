@@ -51,7 +51,7 @@ export function ChatWidget() {
 
   return (
     <div
-      className="w-full max-w-[400px] rounded-2xl bg-white overflow-hidden flex flex-col"
+      className="w-full h-full rounded-2xl bg-white overflow-hidden flex flex-col"
       style={{ boxShadow: "var(--shadow-chat)" }}
     >
       {/* Header */}
