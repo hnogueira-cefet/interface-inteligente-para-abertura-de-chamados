@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Clock, Sparkles, ShieldCheck, MessageSquare, User, Landmark, Users, GraduationCap } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
+import { Clock, Sparkles, ShieldCheck, Landmark, Users, GraduationCap } from "lucide-react";
 import { ChatWidget } from "@/components/ChatWidget";
 import mascot from "@/assets/mascot.png";
 
