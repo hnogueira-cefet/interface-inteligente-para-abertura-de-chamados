@@ -1,12 +1,11 @@
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { Send, Volume2, MoreVertical, BookOpen, FileText, GraduationCap, Building2, MessageCircle } from "lucide-react";
+import { Send, Volume2, MoreVertical, BookOpen, GraduationCap, Building2, MessageCircle } from "lucide-react";
 import { sendChatMessage, type ChatMessage } from "@/lib/chatbot.functions";
 import mascot from "@/assets/mascot.png";
 
 const QUICK_ACTIONS = [
   { icon: BookOpen, label: "Informações sobre cursos" },
-  { icon: FileText, label: "Processos seletivos" },
   { icon: GraduationCap, label: "Serviços acadêmicos" },
   { icon: Building2, label: "Unidades e setores" },
   { icon: MessageCircle, label: "Outros assuntos" },
