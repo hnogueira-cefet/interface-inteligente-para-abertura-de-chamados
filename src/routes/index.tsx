@@ -58,42 +58,46 @@ function Home() {
               "radial-gradient(circle at 20% 20%, white 0%, transparent 40%), radial-gradient(circle at 80% 70%, white 0%, transparent 40%)",
           }}
         />
-        <div className="relative max-w-7xl mx-auto px-6 py-12 grid lg:grid-cols-[1fr_auto] gap-8 items-center">
-          {/* Left content + mascot */}
-          <div className="relative grid md:grid-cols-2 gap-6 items-end min-h-[520px]">
-            <div className="text-white z-10">
-              <h1 className="font-extrabold leading-[0.95] tracking-tight">
-                <span className="block text-6xl md:text-7xl">Suporte</span>
-                <span className="block text-6xl md:text-7xl text-brand-blue-light">
-                  Inteligente
-                </span>
-              </h1>
-              <p className="mt-6 text-white/85 text-base max-w-md leading-relaxed">
-                O Suporte Inteligente do CEFET/RJ Campus Nova Iguaçu está aqui para
-                ajudar você com informações, serviços e orientações.
-              </p>
+        <div className="relative max-w-7xl mx-auto px-6 py-12 grid gap-8 items-stretch lg:grid-cols-[35fr_32.5fr_32.5fr]">
+          {/* Col 1: Texto institucional */}
+          <div className="text-white z-10 flex flex-col justify-center">
+            <h1 className="font-extrabold leading-[0.95] tracking-tight">
+              <span className="block text-5xl md:text-6xl">Suporte</span>
+              <span className="block text-5xl md:text-6xl text-brand-blue-light">
+                Inteligente
+              </span>
+            </h1>
+            <p className="mt-6 text-white/85 text-base max-w-md leading-relaxed">
+              O Suporte Inteligente do CEFET/RJ Campus Nova Iguaçu está aqui para
+              ajudar você com informações, serviços e orientações.
+            </p>
 
-              <div className="mt-8 flex flex-wrap gap-6">
-                <Feature icon={Clock} title="Atendimento" subtitle="24 horas" />
-                <Feature icon={Sparkles} title="Respostas" subtitle="Inteligentes" />
-                <Feature icon={ShieldCheck} title="Informações" subtitle="Confiáveis" />
-              </div>
-
-            </div>
-
-            <div className="relative hidden md:block">
-              <img
-                src={mascot}
-                alt="Mascote do Suporte Inteligente CEFET/RJ"
-                width={896}
-                height={1216}
-                className="relative z-10 w-full max-w-md mx-auto drop-shadow-2xl"
-              />
+            <div className="mt-8 flex flex-wrap gap-6">
+              <Feature icon={Clock} title="Atendimento" subtitle="24 horas" />
+              <Feature icon={Sparkles} title="Respostas" subtitle="Inteligentes" />
+              <Feature icon={ShieldCheck} title="Informações" subtitle="Confiáveis" />
             </div>
           </div>
 
-          {/* Chat */}
-          <div className="lg:w-[400px] w-full mx-auto">
+          {/* Col 2: Avatar - card glassmorphism */}
+          <div
+            className="relative rounded-2xl overflow-hidden flex items-center justify-center p-6 h-[700px] max-lg:h-[420px] max-sm:h-[300px] border border-white/15 mx-auto w-full"
+            style={{
+              background: "linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03))",
+              backdropFilter: "blur(14px)",
+              WebkitBackdropFilter: "blur(14px)",
+              boxShadow: "var(--shadow-chat)",
+            }}
+          >
+            <img
+              src={mascot}
+              alt="Mascote do Suporte Inteligente CEFET/RJ"
+              className="max-h-full max-w-full w-auto h-auto object-contain drop-shadow-2xl"
+            />
+          </div>
+
+          {/* Col 3: Chatbot */}
+          <div className="h-[700px] flex w-full mx-auto">
             <ChatWidget />
           </div>
         </div>

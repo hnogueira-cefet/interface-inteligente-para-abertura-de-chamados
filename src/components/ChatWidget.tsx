@@ -51,7 +51,7 @@ export function ChatWidget() {
 
   return (
     <div
-      className="w-full max-w-[400px] rounded-2xl bg-white overflow-hidden flex flex-col"
+      className="w-full h-full rounded-2xl bg-white overflow-hidden flex flex-col"
       style={{ boxShadow: "var(--shadow-chat)" }}
     >
       {/* Header */}
@@ -75,7 +75,7 @@ export function ChatWidget() {
       </div>
 
       {/* Messages */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-3 max-h-[340px] min-h-[260px] bg-white">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-white">
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
             <div
