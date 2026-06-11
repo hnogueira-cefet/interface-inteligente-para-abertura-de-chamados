@@ -70,8 +70,8 @@ function Home() {
             }}
           >
             <h1 className="font-extrabold leading-[0.95] tracking-tight">
-              <span className="block text-4xl md:text-5xl lg:text-6xl">Suporte</span>
-              <span className="block text-4xl md:text-5xl lg:text-6xl text-brand-blue-light">
+              <span className="block text-2xl md:text-3xl lg:text-4xl">Suporte</span>
+              <span className="block text-2xl md:text-3xl lg:text-4xl text-brand-blue-light">
                 Inteligente
               </span>
             </h1>
