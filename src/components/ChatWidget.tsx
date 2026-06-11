@@ -5,9 +5,9 @@ import { sendChatMessage, type ChatMessage } from "@/lib/chatbot.functions";
 import mascot from "@/assets/mascot.png";
 
 const QUICK_ACTIONS = [
-  { icon: BookOpen, label: "Informações sobre cursos" },
-  { icon: GraduationCap, label: "Serviços acadêmicos" },
-  { icon: Building2, label: "Unidades e setores" },
+  { icon: BookOpen, label: "Orientações sobre abertura de chamados" },
+  { icon: GraduationCap, label: "Problemas no acesso ao Portal do Aluno" },
+  { icon: Building2, label: "Principais tipos de abertura de chamados" },
   { icon: MessageCircle, label: "Outros assuntos" },
 ];
 
