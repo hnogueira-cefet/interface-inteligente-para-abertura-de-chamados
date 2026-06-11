@@ -19,8 +19,11 @@ import process from "node:process";
 export function getServerConfig() {
   return {
     nodeEnv: process.env.NODE_ENV,
-    // Add server-only values here, e.g.:
-    //   databaseUrl: process.env.DATABASE_URL,
-    //   stripeSecretKey: process.env.STRIPE_SECRET_KEY,
+    // Configuração do backend FastAPI (Suporte Inteligente CEFET/RJ).
+    // CHATBOT_API_URL deve apontar para o endpoint /chat do backend.
+    // CHATBOT_API_KEY (opcional) é repassada no header X-API-Token.
+    chatbotApiUrl: process.env.CHATBOT_API_URL ?? "http://localhost:8000/chat",
+    chatbotApiKey: process.env.CHATBOT_API_KEY ?? "",
+    chatbotTimeoutMs: Number(process.env.CHATBOT_TIMEOUT_MS ?? 30000),
   };
 }

@@ -1,6 +1,14 @@
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { Send, Volume2, MoreVertical, BookOpen, GraduationCap, Building2, MessageCircle } from "lucide-react";
+import {
+  Send,
+  Volume2,
+  MoreVertical,
+  BookOpen,
+  GraduationCap,
+  Building2,
+  MessageCircle,
+} from "lucide-react";
 import { sendChatMessage, type ChatMessage } from "@/lib/chatbot.functions";
 import mascot from "@/assets/mascot.png";
 
@@ -11,38 +19,90 @@ const QUICK_ACTIONS = [
   { icon: MessageCircle, label: "Outros assuntos" },
 ];
 
+const INITIAL_GREETING: ChatMessage = {
+  role: "assistant",
+  content:
+    "Olá! 👋\n" +
+    "Sou o Suporte Inteligente do CEFET/RJ.\n" +
+    "Posso auxiliar você com orientações sobre abertura de chamados.\n\n" +
+    "Para começarmos, informe se você é aluno da Pós-Graduação Stricto Sensu ou da Pós-Graduação Lato Sensu e qual é a sua necessidade.",
+};
+
+const SESSION_STORAGE_KEY = "cefet_suporte_session_id";
+
+function generateSessionId(): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  // Fallback simples para ambientes sem crypto.randomUUID.
+  return `s-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`;
+}
+
+function loadSessionId(): string {
+  if (typeof window === "undefined") return generateSessionId();
+  try {
+    const existing = window.localStorage.getItem(SESSION_STORAGE_KEY);
+    if (existing && /^[A-Za-z0-9_-]{8,128}$/u.test(existing)) {
+      return existing;
+    }
+    const fresh = generateSessionId();
+    window.localStorage.setItem(SESSION_STORAGE_KEY, fresh);
+    return fresh;
+  } catch {
+    return generateSessionId();
+  }
+}
+
 export function ChatWidget() {
   const send = useServerFn(sendChatMessage);
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      role: "assistant",
-      content:
-        "Olá! 👋\nSou o Suporte Inteligente do CEFET/RJ Campus Nova Iguaçu. Como posso ajudar?",
-    },
-  ]);
+  const [sessionId, setSessionId] = useState<string>(() =>
+    typeof window === "undefined" ? "" : loadSessionId(),
+  );
+  const [messages, setMessages] = useState<ChatMessage[]>([INITIAL_GREETING]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Garante session_id também após hidratação SSR.
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+    if (!sessionId) setSessionId(loadSessionId());
+  }, [sessionId]);
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior: "smooth",
+    });
   }, [messages, loading]);
 
   async function submit(text: string) {
     const content = text.trim();
     if (!content || loading) return;
+    const sid = sessionId || loadSessionId();
+    if (!sessionId) setSessionId(sid);
+
     const userMsg: ChatMessage = { role: "user", content };
     const next = [...messages, userMsg];
     setMessages(next);
     setInput("");
     setLoading(true);
     try {
-      const res = await send({ data: { message: content, history: messages.slice(-20) } });
+      const res = await send({
+        data: {
+          session_id: sid,
+          message: content,
+          history: messages.slice(-20),
+        },
+      });
       setMessages((m) => [...m, { role: "assistant", content: res.reply }]);
     } catch {
       setMessages((m) => [
         ...m,
-        { role: "assistant", content: "Desculpe, tive um problema ao processar sua mensagem. Tente novamente." },
+        {
+          role: "assistant",
+          content:
+            "Desculpe, tive um problema ao processar sua mensagem. Tente novamente.",
+        },
       ]);
     } finally {
       setLoading(false);
@@ -57,7 +117,11 @@ export function ChatWidget() {
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-3 border-b border-border bg-white">
         <div className="relative">
-          <img src={mascot} alt="" className="w-10 h-10 rounded-full object-cover bg-brand-navy" />
+          <img
+            src={mascot}
+            alt=""
+            className="w-10 h-10 rounded-full object-cover bg-brand-navy"
+          />
           <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 ring-2 ring-white" />
         </div>
         <div className="flex-1">
@@ -131,6 +195,8 @@ export function ChatWidget() {
             onChange={(e) => setInput(e.target.value)}
             placeholder="Digite sua mensagem..."
             className="flex-1 px-4 py-2.5 rounded-full bg-secondary text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-brand-blue/40"
+            maxLength={2000}
+            aria-label="Sua mensagem"
           />
           <button
             type="submit"
