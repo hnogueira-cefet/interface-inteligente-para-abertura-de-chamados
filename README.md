@@ -163,8 +163,20 @@ Edite o `.env` e preencha:
 | Variável | O que colocar |
 | --- | --- |
 | `GROQ_API_KEY` | Chave em [console.groq.com/keys](https://console.groq.com/keys) (obrigatória só no modo `ia`) |
-| `API_TOKEN` | Token secreto compartilhado — gere com: `python3 -c "import secrets; print(secrets.token_urlsafe(32))"` |
-| `PERGUNTA_API_MODO` | `teste` (Lorem Ipsum) ou `ia` (resposta real) |
+| `API_TOKEN` | Token que **você mesmo gera** no seu `.env` (veja abaixo) — não usa e-mail |
+| `CHATBOT_API_KEY` | **Mesmo valor** do `API_TOKEN` (obrigatório se subir frontend + backend) |
+
+**Gerar o seu token local** (cada integrador cria o seu; não precisa pedir ao professor):
+
+```bash
+python3 -c "import secrets; print(secrets.token_urlsafe(32))"
+```
+
+Cole o resultado em `API_TOKEN` e, se for usar o chat web, repita em `CHATBOT_API_KEY`.
+
+> O token **não está ligado ao e-mail** do GitHub nem ao CEFET — é só uma senha
+> que o backend valida no header `X-API-Token`. Em teste local, cada aluno usa
+> o token que gerou no próprio `.env`.
 
 > O arquivo `.env` **não vai para o GitHub**. Cada integrador cria o seu localmente.
 
@@ -250,8 +262,9 @@ ngrok http 8000
 ```
 
 Use a URL pública gerada (ex.: `https://abc123.ngrok-free.app/api/pergunta`) no
-conector. **Não compartilhe o `API_TOKEN` publicamente** — envie apenas para
-membros da equipe por canal privado (WhatsApp, e-mail institucional, etc.).
+conector. Em ambiente compartilhado (servidor/ngrok da equipe), combine o
+`API_TOKEN` em canal privado. Em **teste local**, cada pessoa usa o token que
+gerou no próprio `.env`.
 
 ### Passo 7 — Ativar respostas com IA
 
@@ -282,9 +295,15 @@ A resposta passará a vir do modelo **Llama 3.3** via Groq.
 ### O que compartilhar com a equipe
 
 1. Link do repositório (este README).
-2. `API_TOKEN` **por canal privado** (nunca no GitHub).
-3. URL do backend (`http://localhost:8000` em dev, ou URL pública com ngrok/deploy).
-4. Endpoint: `POST /api/pergunta` com body `{"pergunta": "..."}`.
+2. URL do backend em ambiente compartilhado (`http://localhost:8000` em dev local de cada um, ou URL pública com ngrok/deploy).
+3. Endpoint: `POST /api/pergunta` com body `{"pergunta": "..."}`.
+
+**Teste local:** cada aluno gera o **próprio** `API_TOKEN` no `.env` — **não**
+é necessário enviar token por WhatsApp. O e-mail CEFET/GitHub só importa para
+commits no repositório, não para autenticar na API.
+
+**Ambiente compartilhado** (um único servidor para todos): aí sim combine um
+`API_TOKEN` único em canal privado com a equipe.
 
 ---
 
