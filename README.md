@@ -17,6 +17,7 @@ CEFET/RJ. Combina um **frontend TanStack Start** (React 19 + Vite) com um
 - [Configuração da API Groq](#configuração-da-api-groq)
 - [Execução local (dev)](#execução-local-dev)
 - [Execução via Docker Compose](#execução-via-docker-compose)
+- [Guia do aluno — testar a API (integração WhatsApp)](#guia-do-aluno--testar-a-api-integração-whatsapp)
 - [Variáveis de ambiente](#variáveis-de-ambiente)
 - [Endpoints do backend](#endpoints-do-backend)
 - [Deploy](#deploy)
@@ -124,6 +125,169 @@ Para parar: `docker compose down`. Para rebuild forçado: `docker compose build 
 
 ---
 
+## Guia do aluno — testar a API (integração WhatsApp)
+
+Este guia é para quem vai **integrar um canal WhatsApp** (ou outro sistema
+externo) ao Suporte Inteligente. A ideia é simples: o usuário digita uma
+pergunta no WhatsApp, o conector envia o texto para a API e devolve a resposta
+na conversa.
+
+### Como funciona a integração
+
+```
+┌─────────────┐    mensagem     ┌──────────────────┐   POST /api/pergunta   ┌─────────────┐
+│  Usuário    │ ──────────────▶ │ Bot / Conector   │ ─────────────────────▶ │   FastAPI   │
+│  (WhatsApp) │ ◀────────────── │ (Evolution, n8n, │ ◀───────────────────── │  (backend)  │
+└─────────────┘    resposta     │  script Python…) │   { pergunta, resposta} └─────────────┘
+                                └──────────────────┘
+```
+
+No **primeiro momento**, a API responde com **Lorem Ipsum** (`PERGUNTA_API_MODO=teste`)
+para validar a comunicação. Depois, troque para `ia` para usar o modelo Llama.
+
+### Passo 1 — Clonar o repositório
+
+```bash
+git clone https://github.com/hnogueira-cefet/interface-inteligente-para-abertura-de-chamados.git
+cd interface-inteligente-para-abertura-de-chamados
+```
+
+### Passo 2 — Configurar o `.env`
+
+```bash
+cp .env.example .env
+```
+
+Edite o `.env` e preencha:
+
+| Variável | O que colocar |
+| --- | --- |
+| `GROQ_API_KEY` | Chave em [console.groq.com/keys](https://console.groq.com/keys) (obrigatória só no modo `ia`) |
+| `API_TOKEN` | Token secreto compartilhado — gere com: `python3 -c "import secrets; print(secrets.token_urlsafe(32))"` |
+| `PERGUNTA_API_MODO` | `teste` (Lorem Ipsum) ou `ia` (resposta real) |
+
+> O arquivo `.env` **não vai para o GitHub**. Cada integrador cria o seu localmente.
+
+### Passo 3 — Subir a plataforma
+
+```bash
+docker compose up --build
+```
+
+Aguarde os containers ficarem saudáveis:
+
+- Backend: http://localhost:8000/health
+- Interface web (chat): http://localhost:3000
+- Documentação Swagger: http://localhost:8000/docs
+
+### Passo 4 — Testar a API (simula o que o WhatsApp enviaria)
+
+Substitua `SEU_API_TOKEN` pelo valor definido em `API_TOKEN` no `.env`:
+
+```bash
+curl -X POST http://localhost:8000/api/pergunta \
+  -H "Content-Type: application/json" \
+  -H "X-API-Token: SEU_API_TOKEN" \
+  -d '{"pergunta": "Como abro um chamado de histórico escolar?"}'
+```
+
+**Resposta esperada (modo `teste`):**
+
+```json
+{
+  "pergunta": "Como abro um chamado de histórico escolar?",
+  "resposta": "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
+  "modo": "teste"
+}
+```
+
+Se receber `200 OK` com esse JSON, a comunicação está funcionando.
+
+### Passo 5 — Conectar ao WhatsApp
+
+A API **não fala com o WhatsApp diretamente**. Você precisa de um **conector**
+que:
+
+1. Recebe a mensagem do usuário no WhatsApp (via Evolution API, n8n, Twilio,
+   WhatsApp Business API, etc.).
+2. Extrai o texto digitado.
+3. Faz `POST /api/pergunta` com o corpo `{"pergunta": "<texto do usuário>"}`.
+4. Envia o campo `resposta` de volta ao usuário no WhatsApp.
+
+**Exemplo mínimo em Python** (o conector rodaria ao lado do backend):
+
+```python
+import os
+import requests
+
+API_URL = "http://localhost:8000/api/pergunta"
+API_TOKEN = os.environ["API_TOKEN"]  # mesmo valor do .env
+
+def responder_whatsapp(texto_usuario: str) -> str:
+    r = requests.post(
+        API_URL,
+        headers={
+            "Content-Type": "application/json",
+            "X-API-Token": API_TOKEN,
+        },
+        json={"pergunta": texto_usuario},
+        timeout=30,
+    )
+    r.raise_for_status()
+    return r.json()["resposta"]
+
+# Simula uma mensagem recebida no WhatsApp:
+print(responder_whatsapp("Preciso de orientação sobre chamados"))
+```
+
+### Passo 6 — Expor a API para teste externo (opcional)
+
+Se o conector WhatsApp estiver em outra máquina ou na nuvem, exponha o backend
+com um túnel (ex.: [ngrok](https://ngrok.com)):
+
+```bash
+ngrok http 8000
+```
+
+Use a URL pública gerada (ex.: `https://abc123.ngrok-free.app/api/pergunta`) no
+conector. **Não compartilhe o `API_TOKEN` publicamente** — envie apenas para
+membros da equipe por canal privado (WhatsApp, e-mail institucional, etc.).
+
+### Passo 7 — Ativar respostas com IA
+
+Quando a integração estiver validada, altere no `.env`:
+
+```env
+PERGUNTA_API_MODO=ia
+GROQ_API_KEY=gsk_sua_chave_aqui
+```
+
+Reinicie o backend:
+
+```bash
+docker compose up -d --build backend
+```
+
+A resposta passará a vir do modelo **Llama 3.3** via Groq.
+
+### Erros comuns
+
+| Sintoma | Causa provável | Solução |
+| --- | --- | --- |
+| `401 Unauthorized` | `X-API-Token` ausente ou diferente do `API_TOKEN` | Confira o header e o `.env` |
+| `Connection refused` | Backend não está rodando | `docker compose up --build` |
+| Resposta sempre Lorem Ipsum | Modo teste ativo | `PERGUNTA_API_MODO=ia` + `GROQ_API_KEY` |
+| `502 Bad Gateway` (modo `ia`) | Chave Groq inválida ou sem crédito | Verifique em console.groq.com |
+
+### O que compartilhar com a equipe
+
+1. Link do repositório (este README).
+2. `API_TOKEN` **por canal privado** (nunca no GitHub).
+3. URL do backend (`http://localhost:8000` em dev, ou URL pública com ngrok/deploy).
+4. Endpoint: `POST /api/pergunta` com body `{"pergunta": "..."}`.
+
+---
+
 ## Variáveis de ambiente
 
 | Variável | Padrão | Descrição |
@@ -151,6 +315,7 @@ Para parar: `docker compose down`. Para rebuild forçado: `docker compose build 
 | `CHATBOT_API_URL` | `http://localhost:8000/chat` | Endpoint chamado pela server function |
 | `CHATBOT_API_KEY` | _(vazio)_ | Valor enviado em `X-API-Token` |
 | `CHATBOT_TIMEOUT_MS` | `30000` | Timeout do proxy server-side |
+| `PERGUNTA_API_MODO` | `teste` | `teste` (Lorem Ipsum) ou `ia` (Llama/Groq) |
 
 ---
 
@@ -183,6 +348,40 @@ Response:
 Cabeçalhos:
 - `X-API-Token: <API_TOKEN>` — obrigatório quando `API_TOKEN` está definido.
 - `Content-Type: application/json`.
+
+### `POST /api/pergunta` (integração externa / WhatsApp)
+
+API simplificada para sistemas terceiros. Recebe apenas a pergunta do usuário,
+sem `session_id` nem histórico.
+
+Request:
+```json
+{
+  "pergunta": "Como abro um chamado de histórico escolar?"
+}
+```
+
+Response (modo `teste`):
+```json
+{
+  "pergunta": "Como abro um chamado de histórico escolar?",
+  "resposta": "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
+  "modo": "teste"
+}
+```
+
+Response (modo `ia`):
+```json
+{
+  "pergunta": "Como abro um chamado de histórico escolar?",
+  "resposta": "Claro! Você é aluno da Pós-Graduação Stricto Sensu ou Lato Sensu?",
+  "modo": "ia"
+}
+```
+
+Cabeçalhos: iguais ao `/chat` (`X-API-Token`, `Content-Type: application/json`).
+
+Guia completo para alunos: [Guia do aluno — testar a API (integração WhatsApp)](#guia-do-aluno--testar-a-api-integração-whatsapp).
 
 ### `GET /health`
 
@@ -229,7 +428,7 @@ Swagger / ReDoc — disponíveis exceto quando `APP_ENV=production`.
 | --- | --- |
 | **CORS** | `ALLOWED_ORIGINS` restringe domínios permitidos no backend |
 | **Auth backend ⇄ proxy** | Header `X-API-Token` (`API_TOKEN`) |
-| **Rate limiting** | `slowapi` em janelas de 1 min e 1 h, por IP |
+| **Rate limiting** | Janelas de 1 min e 1 h por IP (`services/rate_limiter.py`) |
 | **Sanitização de entrada** | Normalização Unicode + remoção de control chars |
 | **Prompt injection** | Detecção heurística + envelope `<<< ... >>>` + system prompt blindado |
 | **Validação dupla** | Zod no frontend + Pydantic no backend |
@@ -248,6 +447,7 @@ Swagger / ReDoc — disponíveis exceto quando `APP_ENV=production`.
 ├── backend/                       # FastAPI + Groq/Llama
 │   ├── api/                       # routers REST
 │   │   ├── chat.py                # POST /chat
+│   │   ├── pergunta.py            # POST /api/pergunta (integração WhatsApp)
 │   │   ├── health.py              # GET /health
 │   │   └── security.py            # auth + identificação do cliente
 │   ├── config/                    # pydantic-settings
