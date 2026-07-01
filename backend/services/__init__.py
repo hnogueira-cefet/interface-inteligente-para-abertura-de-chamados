@@ -2,7 +2,7 @@
 
 from backend.services.audit_logger import configure_logging, get_logger
 from backend.services.groq_client import GroqClient, get_groq_client
-from backend.services.rate_limiter import limiter, rate_limit_for_chat
+from backend.services.rate_limiter import enforce_rate_limit
 from backend.services.sanitizer import InputSanitizer
 from backend.services.session_store import (
     InMemorySessionStore,
@@ -16,9 +16,8 @@ __all__ = [
     "InputSanitizer",
     "SessionStore",
     "configure_logging",
+    "enforce_rate_limit",
     "get_groq_client",
     "get_logger",
     "get_session_store",
-    "limiter",
-    "rate_limit_for_chat",
 ]

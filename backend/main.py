@@ -15,13 +15,11 @@ from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from slowapi.errors import RateLimitExceeded
-from slowapi.middleware import SlowAPIMiddleware
 
 from backend import __version__
 from backend.api import chat_router, health_router
 from backend.config import get_settings
-from backend.services import configure_logging, get_logger, limiter
+from backend.services import configure_logging, get_logger
 
 
 @asynccontextmanager
@@ -56,10 +54,6 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
-    # Rate limiting
-    app.state.limiter = limiter
-    app.add_middleware(SlowAPIMiddleware)
-
     # CORS — controle de origem (proteção contra spam cross-origin)
     app.add_middleware(
         CORSMiddleware,
@@ -71,21 +65,6 @@ def create_app() -> FastAPI:
     )
 
     # Handlers globais
-    @app.exception_handler(RateLimitExceeded)
-    async def _ratelimit_handler(request: Request, exc: RateLimitExceeded) -> JSONResponse:
-        get_logger("cefet.suporte.ratelimit").warning(
-            "rate_limit.exceeded",
-            path=str(request.url.path),
-            detail=str(exc),
-        )
-        return JSONResponse(
-            status_code=429,
-            content={
-                "detail": "Muitas requisições. Aguarde alguns instantes e tente novamente.",
-                "code": "rate_limited",
-            },
-        )
-
     @app.exception_handler(RequestValidationError)
     async def _validation_handler(
         request: Request, exc: RequestValidationError

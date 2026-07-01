@@ -5,7 +5,8 @@ consulta a Groq (Llama), persiste a conversa e devolve a resposta.
 
 Inclui:
 - Validação de origem via autenticação opcional (X-API-Token).
-- *Rate limiting* (slowapi) — limites por minuto e por hora.
+- Rate limiting (implementação própria em `services/rate_limiter.py`) com
+  janelas de minuto e hora.
 - Sanitização de entrada e proteção contra prompt injection.
 - Logs estruturados de auditoria (sem expor o conteúdo das mensagens em
   produção; veja `app_env`).
@@ -14,7 +15,7 @@ Inclui:
 from __future__ import annotations
 
 import asyncio
-from typing import List
+from typing import Annotated, List
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from groq import GroqError
@@ -24,7 +25,7 @@ from backend.config import Settings, get_settings
 from backend.models import ChatRequest, ChatResponse, MessageRole
 from backend.services.audit_logger import get_logger
 from backend.services.groq_client import GroqClient, get_groq_client
-from backend.services.rate_limiter import limiter, rate_limit_for_chat
+from backend.services.rate_limiter import enforce_rate_limit
 from backend.services.sanitizer import InputSanitizer
 from backend.services.session_store import SessionStore, StoredMessage, get_session_store
 
@@ -53,15 +54,17 @@ def _merge_history(
     "/chat",
     response_model=ChatResponse,
     summary="Envia uma mensagem ao Suporte Inteligente",
-    dependencies=[Depends(authenticate_request)],
+    dependencies=[
+        Depends(authenticate_request),
+        Depends(enforce_rate_limit),
+    ],
 )
-@limiter.limit(rate_limit_for_chat)
 async def chat(
     request: Request,
     payload: ChatRequest,
-    settings: Settings = Depends(get_settings),
-    store: SessionStore = Depends(get_session_store),
-    groq: GroqClient = Depends(get_groq_client),
+    settings: Annotated[Settings, Depends(get_settings)],
+    store: Annotated[SessionStore, Depends(get_session_store)],
+    groq: Annotated[GroqClient, Depends(get_groq_client)],
 ) -> ChatResponse:
     client_id = client_identifier(request)
 

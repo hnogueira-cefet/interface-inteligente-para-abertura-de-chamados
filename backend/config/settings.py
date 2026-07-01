@@ -9,10 +9,10 @@ testes.
 from __future__ import annotations
 
 from functools import lru_cache
-from typing import List
+from typing import Annotated, List
 
 from pydantic import Field, field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -70,7 +70,10 @@ class Settings(BaseSettings):
     max_history_messages: int = Field(default=20, ge=0, le=100)
 
     # ────────── CORS ──────────
-    allowed_origins: List[str] = Field(
+    # `NoDecode` impede o pydantic-settings de tentar parsear a string do .env
+    # como JSON (List[str] aciona o decode automático). Assim o validator
+    # `_parse_origins` abaixo recebe a string crua e faz o split por vírgula.
+    allowed_origins: Annotated[List[str], NoDecode] = Field(
         default_factory=lambda: [
             "http://localhost:3000",
             "http://localhost:5173",
