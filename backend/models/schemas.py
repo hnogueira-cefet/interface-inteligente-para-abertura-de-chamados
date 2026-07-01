@@ -115,3 +115,36 @@ class ErrorResponse(BaseModel):
 
     detail: str
     code: Optional[str] = None
+
+
+class PerguntaRequest(BaseModel):
+    """Corpo de `POST /api/pergunta` — integração externa simplificada."""
+
+    pergunta: str = Field(
+        ...,
+        min_length=1,
+        description="Texto digitado pelo usuário em sistema externo.",
+        examples=["Como abro um chamado de histórico escolar?"],
+    )
+
+    @field_validator("pergunta")
+    @classmethod
+    def _validate_pergunta(cls, value: str) -> str:
+        cleaned = value.strip()
+        if not cleaned:
+            raise ValueError("pergunta não pode ser vazia")
+        max_len = get_settings().max_message_length
+        if len(cleaned) > max_len:
+            raise ValueError(f"pergunta excede {max_len} caracteres")
+        return cleaned
+
+
+class PerguntaResponse(BaseModel):
+    """Resposta de `POST /api/pergunta`."""
+
+    pergunta: str = Field(..., description="Eco da pergunta recebida.")
+    resposta: str = Field(..., description="Texto de resposta do serviço.")
+    modo: str = Field(
+        ...,
+        description='Modo de operação: "teste" (stub) ou "ia" (modelo Llama).',
+    )

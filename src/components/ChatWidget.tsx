@@ -8,8 +8,15 @@ import {
   GraduationCap,
   Building2,
   MessageCircle,
+  Trash2,
 } from "lucide-react";
 import { sendChatMessage, type ChatMessage } from "@/lib/chatbot.functions";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import mascot from "@/assets/mascot.png";
 
 const QUICK_ACTIONS = [
@@ -75,6 +82,21 @@ export function ChatWidget() {
     });
   }, [messages, loading]);
 
+  function clearConversation() {
+    if (loading) return;
+
+    const fresh = generateSessionId();
+    try {
+      window.localStorage.setItem(SESSION_STORAGE_KEY, fresh);
+    } catch {
+      // localStorage indisponível — segue com novo id em memória
+    }
+
+    setSessionId(fresh);
+    setMessages([INITIAL_GREETING]);
+    setInput("");
+  }
+
   async function submit(text: string) {
     const content = text.trim();
     if (!content || loading) return;
@@ -133,9 +155,27 @@ export function ChatWidget() {
         <button className="text-muted-foreground hover:text-foreground p-1" aria-label="Som">
           <Volume2 className="w-5 h-5" />
         </button>
-        <button className="text-muted-foreground hover:text-foreground p-1" aria-label="Mais">
-          <MoreVertical className="w-5 h-5" />
-        </button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              className="text-muted-foreground hover:text-foreground p-1"
+              aria-label="Mais opções"
+              disabled={loading}
+            >
+              <MoreVertical className="w-5 h-5" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem
+              onClick={clearConversation}
+              disabled={loading}
+              className="text-destructive focus:text-destructive"
+            >
+              <Trash2 className="w-4 h-4" />
+              Limpar conversa
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Messages */}

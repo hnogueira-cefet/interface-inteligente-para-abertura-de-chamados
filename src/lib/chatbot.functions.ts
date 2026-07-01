@@ -37,7 +37,7 @@ export type ChatInputData = z.infer<typeof ChatInput>;
  * Resposta:        { response, reply, session_id, model }
  */
 export const sendChatMessage = createServerFn({ method: "POST" })
-  .validator((data: unknown) => ChatInput.parse(data))
+  .inputValidator(ChatInput)
   .handler(async ({ data }) => {
     const config = getServerConfig();
 

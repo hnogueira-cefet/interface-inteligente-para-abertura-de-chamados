@@ -7,6 +7,8 @@ from backend.models.schemas import (
     ErrorResponse,
     HealthResponse,
     MessageRole,
+    PerguntaRequest,
+    PerguntaResponse,
 )
 
 __all__ = [
@@ -16,4 +18,6 @@ __all__ = [
     "ErrorResponse",
     "HealthResponse",
     "MessageRole",
+    "PerguntaRequest",
+    "PerguntaResponse",
 ]

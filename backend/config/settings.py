@@ -92,6 +92,14 @@ class Settings(BaseSettings):
         description='Formato dos logs: "json" (produção) ou "console" (dev).',
     )
 
+    # ────────── API de integração (/api/pergunta) ──────────
+    pergunta_api_modo: str = Field(
+        default="teste",
+        description=(
+            'Modo da API simplificada: "teste" (Lorem Ipsum) ou "ia" (Llama/Groq).'
+        ),
+    )
+
     @field_validator("allowed_origins", mode="before")
     @classmethod
     def _parse_origins(cls, value: object) -> object:

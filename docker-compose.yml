@@ -31,6 +31,8 @@ services:
       - .env
     environment:
       NODE_ENV: production
+      PORT: 3000
+      HOST: 0.0.0.0
       # Em rede compose, o backend é alcançado pelo nome do serviço.
       CHATBOT_API_URL: http://backend:8000/chat
     ports:

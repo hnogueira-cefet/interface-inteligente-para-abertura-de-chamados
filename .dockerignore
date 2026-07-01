@@ -1,0 +1,30 @@
+# Dependências instaladas dentro da imagem
+node_modules
+.venv
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+
+# Artefatos de build locais
+dist
+.output
+.vite
+
+# Git e IDE
+.git
+.gitignore
+.cursor
+**/.ipynb_checkpoints
+
+# Documentação e notebooks (não necessários no build)
+notebooks
+docs
+*.md
+!README.md
+
+# Segredos — injetados em runtime via docker compose env_file
+.env
+.env.*
+
+# Testes
+backend/tests

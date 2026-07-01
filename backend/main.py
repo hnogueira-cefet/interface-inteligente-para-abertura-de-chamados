@@ -17,7 +17,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from backend import __version__
-from backend.api import chat_router, health_router
+from backend.api import chat_router, health_router, pergunta_router
 from backend.config import get_settings
 from backend.services import configure_logging, get_logger
 
@@ -82,6 +82,7 @@ def create_app() -> FastAPI:
     # Routers
     app.include_router(health_router)
     app.include_router(chat_router)
+    app.include_router(pergunta_router)
 
     return app
 
